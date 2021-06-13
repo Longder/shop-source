@@ -25,6 +25,7 @@ public class IndexController {
     /**
      * 后台管理主页
      */
+    @GetMapping("/admin/index")
     public String adminIndex() {
         return "adminIndex";
     }

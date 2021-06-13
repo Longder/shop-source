@@ -7,8 +7,8 @@ import org.springframework.security.core.GrantedAuthority;
  * 系统角色枚举
  */
 public enum SysRole implements GrantedAuthority {
-    ROLE_ADMIN("ROLE_BUYER","买方","买方"),
-    ROLE_USER("ROLE_SELLER","卖方","卖方");
+    ROLE_BUYER("ROLE_BUYER","买方","买方"),
+    ROLE_SELLER("ROLE_SELLER","卖方","卖方");
     /**
      * 名称
      */
