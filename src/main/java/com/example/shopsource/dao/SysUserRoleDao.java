@@ -1,6 +1,6 @@
 package com.example.shopsource.dao;
 
-import com.example.shopsource.entity.SysUserRole;
+import com.example.shopsource.entity.po.SysUserRole;
 import org.apache.ibatis.annotations.ResultMap;
 import org.apache.ibatis.annotations.Select;
 import org.springframework.stereotype.Repository;

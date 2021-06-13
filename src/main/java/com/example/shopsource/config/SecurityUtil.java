@@ -1,6 +1,6 @@
 package com.example.shopsource.config;
 
-import com.example.shopsource.entity.SysUser;
+import com.example.shopsource.entity.po.SysUser;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 

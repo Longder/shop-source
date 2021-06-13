@@ -2,8 +2,8 @@ package com.example.shopsource.config;
 
 import com.example.shopsource.dao.SysUserDao;
 import com.example.shopsource.dao.SysUserRoleDao;
-import com.example.shopsource.entity.SysUser;
-import com.example.shopsource.entity.SysUserRole;
+import com.example.shopsource.entity.po.SysUser;
+import com.example.shopsource.entity.po.SysUserRole;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

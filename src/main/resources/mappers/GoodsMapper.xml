@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.shopsource.dao.GoodsDao">
+    <resultMap id="GoodsResultMap" type="com.example.shopsource.entity.po.Goods">
+        <id column="id" property="id"/>
+        <result column="name" property="name"/>
+        <result column="dealer" property="dealer"/>
+        <result column="factory" property="factory"/>
+        <result column="unit_price" property="unitPrice"/>
+        <result column="image" property="image"/>
+        <result column="qr_code_image" property="qrCodeImage"/>
+        <result column="scan_count" property="scanCount"/>
+        <result column="seller_id" property="sellerId"/>
+    </resultMap>
+</mapper>

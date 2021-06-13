@@ -3,8 +3,165 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
+    <!-- import CSS -->
+    <link rel="stylesheet" href="https://unpkg.zhimg.com/element-ui/lib/theme-chalk/index.css">
 </head>
 <body>
-  <h1>后台主页</h1>
+<div id="app">
+    <el-container>
+        <el-header>
+            <el-menu :default-active="activeMenu"
+                     mode="horizontal"
+                     background-color="#545c64"
+                     text-color="#fff"
+                     active-text-color="#ffd04b">
+                <el-menu-item index="1"><a href="/">首页</a></el-menu-item>
+                <el-menu-item index="2"><a href="/admin/index">商品管理</a></el-menu-item>
+            </el-menu>
+        </el-header>
+        <el-main>
+            <h3>我的商品：
+                <el-button type="primary" @click="addGoodsFormVisible=true;">新增</el-button>
+            </h3>
+            <el-table
+                    :data="goodsList"
+                    border
+                    style="width: 100%">
+                <el-table-column
+                        prop="name"
+                        label="名称">
+                </el-table-column>
+                <el-table-column
+                        prop="dealer"
+                        label="经销商">
+                </el-table-column>
+                <el-table-column
+                        prop="factory"
+                        label="产地">
+                </el-table-column>
+                <el-table-column
+                        prop="unitPrice"
+                        label="单价">
+                </el-table-column>
+                <el-table-column
+                        prop="scanCount"
+                        label="被扫码次数">
+                </el-table-column>
+                <el-table-column label="操作">
+
+                </el-table-column>
+            </el-table>
+        </el-main>
+    </el-container>
+    <el-dialog title="添加商品" :visible.sync="addGoodsFormVisible" destroy-on-close>
+        <el-form :model="addForm" label-width="120px" ref="addForm" :rules="rules">
+            <el-form-item label="名称：" prop="name">
+                <el-input v-model="addForm.name" autocomplete="off"></el-input>
+            </el-form-item>
+            <el-form-item label="经销商：" prop="dealer">
+                <el-input v-model="addForm.dealer" autocomplete="off"></el-input>
+            </el-form-item>
+            <el-form-item label="生产地：" prop="factory">
+                <el-input v-model="addForm.factory" autocomplete="off"></el-input>
+            </el-form-item>
+            <el-form-item label="单价：" prop="unitPrice">
+                <el-input-number v-model="addForm.unitPrice" :precision="2" :step="0.1"></el-input-number>
+            </el-form-item>
+            <el-form-item label="商品图片：">
+                <el-upload
+                        name="imageFile"
+                        ref="addUpload"
+                        :auto-upload="false"
+                        drag
+                        :data="addForm"
+                        action="/admin/goods/add"
+                        :on-success="uploadSuccess"
+                        :multiple="false">
+                    <i class="el-icon-upload"></i>
+                    <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
+                    <div class="el-upload__tip" slot="tip">只能上传jpg/png文件，且不超过500kb</div>
+                </el-upload>
+            </el-form-item>
+        </el-form>
+        <div slot="footer">
+            <el-button @click="addGoodsFormVisible = false">取 消</el-button>
+            <el-button type="primary" @click="addFormSubmit">确 定</el-button>
+        </div>
+    </el-dialog>
+</div>
 </body>
+<!-- import Vue before Element -->
+<script src="https://unpkg.zhimg.com/vue/dist/vue.js"></script>
+<!-- import JavaScript -->
+<script src="https://unpkg.zhimg.com/element-ui/lib/index.js"></script>
+<!--axios-->
+<script src="https://cdn.bootcdn.net/ajax/libs/axios/0.21.1/axios.min.js"></script>
+<script>
+    new Vue({
+        el: '#app',
+        data() {
+            return {
+                activeMenu: '2',
+                goodsList: [],
+                addGoodsFormVisible: false,
+                // 添加表单
+                addForm: {},
+                // 校验规则
+                rules: {
+                    name: [
+                        {required: true, message: '请输入商品名称', trigger: 'blur'}
+                    ],
+                    dealer: [
+                        {required: true, message: '请输入经销商', trigger: 'blur'}
+                    ],
+                    factory: [
+                        {required: true, message: '请输入生产地', trigger: 'blur'}
+                    ],
+                    unitPrice: [
+                        {required: true, message: '请输入单价', trigger: 'blur'}
+                    ],
+                }
+            }
+        },
+        mounted() {
+            this.loadGoods();
+        },
+        methods: {
+            /**
+             * 查询商品数据
+             */
+            loadGoods() {
+                axios.get('/admin/goods/list').then(response => {
+                    if (response.data.success) {
+                        this.goodsList = response.data.data;
+                    } else {
+                        this.$notify.error({
+                            title: '获取商品数据失败',
+                            message: response.data.msg
+                        });
+                    }
+                });
+            },
+            /**
+             * 添加上传表单提交
+             */
+            addFormSubmit() {
+                // 校验表单
+                this.$refs.addForm.validate(valid => {
+                    if (valid) {
+                        this.$refs.addUpload.submit();
+
+                    }
+                });
+            },
+            /**
+             * 文件上传成功
+             */
+            uploadSuccess() {
+                this.addGoodsFormVisible = false;
+                this.loadGoods();
+            }
+        }
+    })
+</script>
 </html>

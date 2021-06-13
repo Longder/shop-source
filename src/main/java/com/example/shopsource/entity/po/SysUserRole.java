@@ -1,8 +1,7 @@
-package com.example.shopsource.entity;
+package com.example.shopsource.entity.po;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 

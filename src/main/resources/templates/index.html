@@ -7,35 +7,79 @@
     <link rel="stylesheet" href="https://unpkg.zhimg.com/element-ui/lib/theme-chalk/index.css">
 </head>
 <body>
-  <div id="app">
-      <el-container>
-          <el-header>
-              <el-menu :default-active="activeMenu"
-                      mode="horizontal"
-                      background-color="#545c64"
-                      text-color="#fff"
-                      active-text-color="#ffd04b">
-                  <el-menu-item index="1">首页</el-menu-item>
-                  <el-menu-item index="2">商品管理</el-menu-item>
-              </el-menu>
-          </el-header>
-          <el-main>
-              <h1>{{text}}</h1>
-          </el-main>
-      </el-container>
-  </div>
+<div id="app">
+    <el-container>
+        <el-header>
+            <el-menu :default-active="activeMenu"
+                     mode="horizontal"
+                     background-color="#545c64"
+                     text-color="#fff"
+                     active-text-color="#ffd04b">
+                <el-menu-item index="1"><a href="/">首页</a></el-menu-item>
+                <el-menu-item index="2"><a href="/admin/index">商品管理</a></el-menu-item>
+            </el-menu>
+        </el-header>
+        <el-main>
+            <h3>所有商品：</h3>
+            <el-row :gutter="40">
+                <el-col :span="8" v-for="goods in goodsList" :key="id" style="margin-top: 10px;">
+                    <el-card>
+                        <el-row :gutter="20">
+                            <el-col :span="12">
+                                <div>商品图片：</div>
+                                <img width="300px" height="300px" :src="goods.image"/>
+                            </el-col>
+                            <el-col :span="12">
+                                <div>商品二维码：</div>
+                                <img width="300px" height="300px" :src="goods.qrCodeImage"/>
+                            </el-col>
+                        </el-row>
+                        <div style="padding: 14px;">
+                            <h4>{{goods.name}}</h4>
+                            <div>商品单价：{{goods.unitPrice}}</div>
+                            <div>生产地：{{goods.factory}}</div>
+                            <div>经销商：{{goods.dealer}}</div>
+                        </div>
+                    </el-card>
+                </el-col>
+            </el-row>
+        </el-main>
+    </el-container>
+</div>
 </body>
 <!-- import Vue before Element -->
 <script src="https://unpkg.zhimg.com/vue/dist/vue.js"></script>
 <!-- import JavaScript -->
 <script src="https://unpkg.zhimg.com/element-ui/lib/index.js"></script>
+<!--axios-->
+<script src="https://cdn.bootcdn.net/ajax/libs/axios/0.21.1/axios.min.js"></script>
 <script>
     new Vue({
         el: '#app',
-        data(){
+        data() {
             return {
-                text:'helloVue',
-                activeMenu:'1'
+                activeMenu: '1',
+                goodsList: [],
+            }
+        },
+        mounted() {
+            this.loadAllGoods();
+        },
+        methods: {
+            /**
+             * 获取所有商品
+             */
+            loadAllGoods() {
+                axios.get('/listAllGoods').then(response => {
+                    if (response.data.success) {
+                        this.goodsList = response.data.data;
+                    } else {
+                        this.$notify.error({
+                            title: '获取商品数据失败',
+                            message: response.data.msg
+                        });
+                    }
+                });
             }
         }
     })

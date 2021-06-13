@@ -1,4 +1,4 @@
-package com.example.shopsource.entity;
+package com.example.shopsource.entity.po;
 
 
 import org.springframework.security.core.GrantedAuthority;

@@ -26,8 +26,8 @@ create table GOODS(
                       dealer     varchar(255) comment '经销商',
                       factory     varchar(255) comment '生产地',
                       unit_price  numeric(18,2) comment '单价',
-                      image       text comment '商品图片',
-                      qr_code_image text comment '商品二维码图片',
+                      image       longtext comment '商品图片',
+                      qr_code_image longtext comment '商品二维码图片',
                       scan_count int comment '扫描次数',
                       seller_id bigint comment '关联卖方id',
                       constraint GOODS_pk
