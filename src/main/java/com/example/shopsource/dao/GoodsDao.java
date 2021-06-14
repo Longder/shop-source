@@ -46,7 +46,7 @@ public interface GoodsDao {
      *
      * @param goods
      */
-    @Update("UPDATE goods SET name = #{name},dealer = #{dealer},factory = #{factory},UNIT_PRICE = #{unitPrice},image = #{image} where id = #{id}")
+    @Update("UPDATE goods SET name = #{name},dealer = #{dealer},factory = #{factory},UNIT_PRICE = #{unitPrice},image = #{image},scan_count=#{scanCount} where id = #{id}")
     void update(Goods goods);
 
     /**

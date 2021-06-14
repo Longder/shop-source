@@ -114,7 +114,7 @@ public class GoodsServiceImpl implements GoodsService {
      */
     @Override
     public Goods getOneGoods(Long goodsId) {
-        return null;
+        return goodsDao.getOne(goodsId);
     }
 
     /**
@@ -123,7 +123,10 @@ public class GoodsServiceImpl implements GoodsService {
      * @param goodsId
      */
     @Override
+    @Transactional
     public void scanCountPlus(Long goodsId) {
-
+        Goods goods = goodsDao.getOne(goodsId);
+        goods.setScanCount(goods.getScanCount() + 1);
+        goodsDao.update(goods);
     }
 }

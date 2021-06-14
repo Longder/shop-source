@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>商品溯源</title>
     <!-- import CSS -->
     <link rel="stylesheet" href="https://unpkg.zhimg.com/element-ui/lib/theme-chalk/index.css">
 </head>
@@ -21,7 +21,7 @@
         </el-header>
         <el-main>
             <h3>我的商品：
-                <el-button type="primary" @click="addGoodsFormVisible=true;">新增</el-button>
+                <el-button type="success" @click="addGoodsFormVisible=true;">新增</el-button>
             </h3>
             <el-table
                     :data="goodsList"
@@ -48,7 +48,12 @@
                         label="被扫码次数">
                 </el-table-column>
                 <el-table-column label="操作">
-
+                    <template slot-scope="scope">
+                        <el-button size="small" type="primary" @click="toDetail(scope.row.id)">详情</el-button>
+                        <el-button style="margin-left: 10px;" size="small" type="warning"
+                                   @click="toUpdateGoods(scope.row.id)">编辑
+                        </el-button>
+                    </template>
                 </el-table-column>
             </el-table>
         </el-main>
@@ -88,6 +93,70 @@
             <el-button type="primary" @click="addFormSubmit">确 定</el-button>
         </div>
     </el-dialog>
+    <el-dialog title="编辑商品" :visible.sync="updateGoodsFormVisible" destroy-on-close>
+        <el-form :model="updateForm" label-width="120px" ref="updateForm" :rules="rules">
+            <el-form-item label="名称：" prop="name">
+                <el-input v-model="updateForm.name" autocomplete="off"></el-input>
+            </el-form-item>
+            <el-form-item label="经销商：" prop="dealer">
+                <el-input v-model="updateForm.dealer" autocomplete="off"></el-input>
+            </el-form-item>
+            <el-form-item label="生产地：" prop="factory">
+                <el-input v-model="updateForm.factory" autocomplete="off"></el-input>
+            </el-form-item>
+            <el-form-item label="单价：" prop="unitPrice">
+                <el-input-number v-model="updateForm.unitPrice" :precision="2" :step="0.1"></el-input-number>
+            </el-form-item>
+            <el-form-item label="商品图片：">
+                <el-upload
+                        name="imageFile"
+                        ref="updateUpload"
+                        :auto-upload="false"
+                        drag
+                        :data="updateForm"
+                        action="/admin/goods/update"
+                        :on-success="uploadSuccess"
+                        :multiple="false">
+                    <i class="el-icon-upload"></i>
+                    <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
+                    <div class="el-upload__tip" slot="tip">只能上传jpg/png文件，且不超过500kb</div>
+                </el-upload>
+            </el-form-item>
+        </el-form>
+        <div slot="footer">
+            <el-button @click="updateGoodsFormVisible = false">取 消</el-button>
+            <el-button type="primary" @click="updateFormSubmit">确 定</el-button>
+        </div>
+    </el-dialog>
+    <el-dialog title="商品详情" :visible.sync="detailVisible">
+        <el-form label-width="120px" :inline="true">
+            <el-form-item label="名称：">
+                <span>{{targetGoodsDetail.name}}</span>
+            </el-form-item>
+            <el-form-item label="经销商：">
+                <span>{{targetGoodsDetail.dealer}}</span>
+            </el-form-item>
+            <el-form-item label="生产地：">
+                <span>{{targetGoodsDetail.factory}}</span>
+            </el-form-item>
+            <el-form-item label="单价：">
+                <span>￥{{targetGoodsDetail.unitPrice}}</span>
+            </el-form-item>
+            <el-form-item label="商品图片：">
+                <el-image style="width: 200px; height: 200px" :src="targetGoodsDetail.image" fit="fill"></el-image>
+            </el-form-item>
+            <el-form-item label="二维码图：">
+                <el-image style="width: 200px; height: 200px" :src="targetGoodsDetail.qrCodeImage"
+                          fit="fill"></el-image>
+            </el-form-item>
+            <el-form-item label="被扫码次数：">
+                <span>{{targetGoodsDetail.scanCount}}次</span>
+            </el-form-item>
+        </el-form>
+        <div slot="footer">
+            <el-button @click="detailVisible = false">关闭</el-button>
+        </div>
+    </el-dialog>
 </div>
 </body>
 <!-- import Vue before Element -->
@@ -104,8 +173,14 @@
                 activeMenu: '2',
                 goodsList: [],
                 addGoodsFormVisible: false,
+                updateGoodsFormVisible: false,
+                detailVisible: false,
                 // 添加表单
                 addForm: {},
+                // 编辑表单
+                updateForm: {},
+                // 查看详情的商品
+                targetGoodsDetail: {},
                 // 校验规则
                 rules: {
                     name: [
@@ -159,7 +234,57 @@
              */
             uploadSuccess() {
                 this.addGoodsFormVisible = false;
+                this.updateGoodsFormVisible = false;
                 this.loadGoods();
+            },
+            /**
+             * 去修改商品
+             */
+            toUpdateGoods(goodsId) {
+                // 查询获取商品详情
+                axios.get("/admin/goods/detail", {
+                    params: {id: goodsId}
+                }).then(response => {
+                    if (response.data.success) {
+                        this.updateForm = response.data.data;
+                        this.updateGoodsFormVisible = true;
+                    } else {
+                        this.$notify.error({
+                            title: '查询商品详情失败',
+                            message: response.data.msg
+                        });
+                    }
+                });
+            },
+            /**
+             * 修改表单提交
+             */
+            updateFormSubmit() {
+                // 校验表单
+                this.$refs.updateForm.validate(valid => {
+                    if (valid) {
+                        this.$refs.updateUpload.submit();
+                    }
+                });
+            },
+            /**
+             * 详情页
+             */
+            toDetail(goodsId) {
+                // 查询获取商品详情
+                axios.get("/admin/goods/detail", {
+                    params: {id: goodsId}
+                }).then(response => {
+                    if (response.data.success) {
+                        this.targetGoodsDetail = response.data.data;
+                        this.detailVisible = true;
+                    } else {
+                        this.$notify.error({
+                            title: '查询商品详情失败',
+                            message: response.data.msg
+                        });
+                    }
+                });
             }
         }
     })

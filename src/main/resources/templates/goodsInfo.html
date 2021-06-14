@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>商品溯源</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <!-- import CSS -->
+    <link rel="stylesheet" href="https://unpkg.zhimg.com/element-ui/lib/theme-chalk/index.css">
+</head>
+<body>
+<div id="app">
+    <el-form label-width="120px">
+        <el-form-item label="名称：">
+            <span>{{goods.name}}</span>
+        </el-form-item>
+        <el-form-item label="经销商：">
+            <span>{{goods.dealer}}</span>
+        </el-form-item>
+        <el-form-item label="生产地：">
+            <span>{{goods.factory}}</span>
+        </el-form-item>
+        <el-form-item label="单价：">
+            <span>￥{{goods.unitPrice}}</span>
+        </el-form-item>
+        <el-form-item label="商品图片：">
+            <el-image style="width: 200px; height: 200px" :src="goods.image" fit="fill"></el-image>
+        </el-form-item>
+        </el-form-item>
+        <el-form-item label="被扫码次数：">
+            <span>{{goods.scanCount}}次</span>
+        </el-form-item>
+    </el-form>
+</div>
+</body>
+<!-- import Vue before Element -->
+<script src="https://unpkg.zhimg.com/vue/dist/vue.js"></script>
+<!-- import JavaScript -->
+<script src="https://unpkg.zhimg.com/element-ui/lib/index.js"></script>
+<!--axios-->
+<script src="https://cdn.bootcdn.net/ajax/libs/axios/0.21.1/axios.min.js"></script>
+<script th:inline="javascript">
+
+    // 商品id，服务器传递
+    let goodsId = [[${goodsId}]];
+
+    new Vue({
+        el: '#app',
+        data() {
+            return {
+                goods:{}
+            }
+        },
+        mounted() {
+            this.getDetail();
+        },
+        methods: {
+            getDetail(){
+                // 查询获取商品详情
+                axios.get("/goodsDetails", {
+                    params: {id: goodsId}
+                }).then(response => {
+                    if (response.data.success) {
+                        this.goods = response.data.data;
+                    } else {
+                        this.$notify.error({
+                            title: '查询商品详情失败',
+                            message: response.data.msg
+                        });
+                    }
+                });
+            }
+        }
+    })
+</script>
+</html>
